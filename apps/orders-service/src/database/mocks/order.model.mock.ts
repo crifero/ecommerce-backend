@@ -1,5 +1,4 @@
 import { BaseModelMock } from './base-model.mock';
-import { Order } from '../models/order.model';
 import { allOrdersStub } from '../stubs/order.stub';
 
 export class OrderModelMock extends BaseModelMock<any> {
