@@ -83,6 +83,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     strategy:
+      max-parallel: 1
       matrix:
         service: [products-service, orders-service]
     permissions:
