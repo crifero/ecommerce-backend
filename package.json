@@ -1,0 +1,15 @@
+{
+  "name": "ecommerce-platform",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "start:products": "cd apps/products-service && npm run start:dev",
+    "start:orders": "cd apps/orders-service && npm run start:dev",
+    "build:all": "cd apps/products-service && npm run build && cd ../orders-service && npm run build",
+    "lint:all": "cd apps/products-service && npm run lint && cd ../orders-service && npm run lint",
+    "test:all": "cd apps/products-service && npm run test && cd ../orders-service && npm run test"
+  }
+}
