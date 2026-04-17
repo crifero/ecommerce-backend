@@ -51,7 +51,7 @@ Backend de e-commerce con arquitectura de microservicios usando NestJS, PostgreS
 
 ```bash
 git clone https://github.com/crifero/ecommerce-backend.git
-cd ecommerce
+cd ecommerce-backend
 docker-compose up --build
 ```
 
