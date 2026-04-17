@@ -78,21 +78,12 @@ jobs:
       - run: npm run test
 
   release:
-    name: Version bump & Changelog (${{ matrix.service }})
+    name: Version bump & Changelog
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    strategy:
-      max-parallel: 1
-      matrix:
-        service: [products-service, orders-service]
     permissions:
       contents: write
-    outputs:
-      new_version: ${{ steps.bump.outputs.new_version }}
-    defaults:
-      run:
-        working-directory: apps/${{ matrix.service }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -104,20 +95,19 @@ jobs:
           node-version: 20
 
       - name: Configure git
-        working-directory: .
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Bump patch version
-        id: bump
-        run: |
-          npm version patch --no-git-tag-version
-          NEW_VERSION=$(node -p "require('./package.json').version")
-          echo "new_version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+      - name: Bump patch version — products-service
+        working-directory: apps/products-service
+        run: npm version patch --no-git-tag-version
+
+      - name: Bump patch version — orders-service
+        working-directory: apps/orders-service
+        run: npm version patch --no-git-tag-version
 
       - name: Generate CHANGELOG
-        working-directory: .
         run: |
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
           if [ -z "$LAST_TAG" ]; then
@@ -125,20 +115,20 @@ jobs:
           else
             COMMITS=$(git log --pretty=format:"- %s (%h)" ${LAST_TAG}..HEAD)
           fi
-          NEW_VERSION=${{ steps.bump.outputs.new_version }}
           DATE=$(date +%Y-%m-%d)
-          HEADER="## [${{ matrix.service }} ${NEW_VERSION}] - ${DATE}"
+          PS_VERSION=$(node -p "require('./apps/products-service/package.json').version")
+          OS_VERSION=$(node -p "require('./apps/orders-service/package.json').version")
+          HEADER="## [products-service ${PS_VERSION} / orders-service ${OS_VERSION}] - ${DATE}"
           if [ -f CHANGELOG.md ]; then
             echo -e "${HEADER}\n\n${COMMITS}\n\n$(cat CHANGELOG.md)" > CHANGELOG.md
           else
             echo -e "# Changelog\n\n${HEADER}\n\n${COMMITS}" > CHANGELOG.md
           fi
 
-      - name: Commit version bump and changelog
-        working-directory: .
+      - name: Commit and push all version bumps
         run: |
-          git add apps/${{ matrix.service }}/package.json CHANGELOG.md
-          git commit -m "chore(${{ matrix.service }}): bump version and update changelog [skip ci]"
+          git add apps/products-service/package.json apps/orders-service/package.json CHANGELOG.md
+          git commit -m "chore: bump versions and update changelog [skip ci]"
           git push
 
   simulate-deploy:
