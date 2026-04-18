@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
-import { ExecutionContext } from '@nestjs/common';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
 import { ProductsServiceMock } from './mock/products.service.mock';
@@ -23,9 +22,9 @@ describe('ProductsController', () => {
       .overrideProvider(ProductsService)
       .useClass(ProductsServiceMock)
       .overrideGuard(JwtAuthGuard)
-      .useValue({ canActivate: (_ctx: ExecutionContext) => true })
+      .useValue({ canActivate: () => true })
       .overrideGuard(RolesGuard)
-      .useValue({ canActivate: (_ctx: ExecutionContext) => true })
+      .useValue({ canActivate: () => true })
       .compile();
 
     controller = module.get<ProductsController>(ProductsController);
