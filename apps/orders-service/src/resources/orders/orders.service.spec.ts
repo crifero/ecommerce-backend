@@ -16,6 +16,7 @@ import { OrderStatusModelMock } from '../../database/mocks/order-status.model.mo
 import { orderStub, allOrdersStub } from '../../database/stubs/order.stub';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { SearchOrderDto } from './dto/search-order.dto';
+import { Op } from 'sequelize';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
@@ -97,7 +98,7 @@ describe('OrdersService', () => {
     it('should set endDate to end of day (23:59:59)', async () => {
       await service.findAll({ startDate: '2026-04-01', endDate: '2026-04-18' }, TEST_USER_ID);
       const callArg = orderModelMock.findAll.mock.calls[0][0];
-      const endDate: Date = callArg.where.createdAt[require('sequelize').Op.lte];
+      const endDate: Date = callArg.where.createdAt[Op.lte];
       expect(endDate.getUTCHours()).toBe(23);
       expect(endDate.getUTCMinutes()).toBe(59);
       expect(endDate.getUTCSeconds()).toBe(59);
