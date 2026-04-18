@@ -44,8 +44,9 @@ export class OrdersService {
 
   async findAll(
     query: SearchOrderDto,
+    userId: number,
   ): Promise<GetOrderDto[] | PaginatedResponseBody<GetOrderDto>> {
-    const where: any = { wasDeleted: false };
+    const where: any = { wasDeleted: false, userId };
 
     if (query.startDate && query.endDate) {
       where.createdAt = {
@@ -86,9 +87,9 @@ export class OrdersService {
     return this.mapper.mapArray(orders, Order, GetOrderDto);
   }
 
-  async findOne(id: number): Promise<GetOrderDto> {
+  async findOne(id: number, userId: number): Promise<GetOrderDto> {
     const order = await this.orderModel.findOne({
-      where: { id, wasDeleted: false },
+      where: { id, userId, wasDeleted: false },
       include: [
         { model: OrderStatus, as: 'status' },
         { model: OrderItem, as: 'items', where: { wasDeleted: false }, required: false },
@@ -143,7 +144,7 @@ export class OrdersService {
     return productData;
   }
 
-  async create(dto: CreateOrderDto): Promise<GetOrderDto> {
+  async create(dto: CreateOrderDto, userId: number): Promise<GetOrderDto> {
     const resolvedItems = await Promise.all(
       dto.items.map(async (item) => ({
         product: await this.fetchAndValidateProduct(item.productId, item.quantity),
@@ -161,6 +162,7 @@ export class OrdersService {
 
       const order = await this.orderModel.create(
         {
+          userId,
           statusId: 1,
           total,
           observations: dto.observations ?? null,
@@ -188,7 +190,7 @@ export class OrdersService {
 
       await transaction.commit();
 
-      return this.findOne(order.id);
+      return this.findOne(order.id, userId);
     } catch (err) {
       await transaction.rollback();
       throw err;
