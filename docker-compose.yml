@@ -62,6 +62,7 @@ services:
       DB_NAME: ecommerce_db
       DB_SCHEMA: products
       JWT_SECRET: jwt_secret_change_in_production
+      SERVICE_KEY: internal_service_key
     ports:
       - "3001:3001"
     depends_on:
@@ -89,6 +90,7 @@ services:
       DB_SCHEMA: orders
       PRODUCTS_SERVICE_URL: http://products-service:3001
       JWT_SECRET: jwt_secret_change_in_production
+      SERVICE_KEY: internal_service_key
     ports:
       - "3002:3002"
     depends_on:

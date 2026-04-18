@@ -23,6 +23,19 @@ export class SequelizeConfig implements SequelizeOptionsFactory {
       models: [__dirname + '/../../../database/models/**/*.model{.ts,.js}'],
       autoLoadModels: true,
       synchronize: this.configService.get<string>('NODE_ENV') !== 'production',
+      hooks: {
+        beforeSync: async ({ sequelize }: any) => {
+          await sequelize.query(`
+            ALTER TABLE IF EXISTS orders.orders
+              ADD COLUMN IF NOT EXISTS user_id INTEGER NOT NULL DEFAULT 0;
+            ALTER TABLE IF EXISTS orders.order_items
+              ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT true,
+              ADD COLUMN IF NOT EXISTS was_deleted BOOLEAN NOT NULL DEFAULT false,
+              ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ,
+              ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ;
+          `);
+        },
+      },
       logging: this.configService.get<string>('DEBUG') === 'true' ? console.log : false,
       dialectOptions: {
         timezone: '-05:00',

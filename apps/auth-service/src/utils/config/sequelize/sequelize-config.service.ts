@@ -23,6 +23,7 @@ export class SequelizeConfig implements SequelizeOptionsFactory {
       models: [__dirname + '/../../../database/models/**/*.model{.ts,.js}'],
       autoLoadModels: true,
       synchronize: this.configService.get<string>('NODE_ENV') !== 'production',
+      sync: { alter: this.configService.get<string>('NODE_ENV') !== 'production' },
       hooks: {
         beforeSync: async ({ sequelize }: any) => {
           await sequelize.query('CREATE SCHEMA IF NOT EXISTS auth');
