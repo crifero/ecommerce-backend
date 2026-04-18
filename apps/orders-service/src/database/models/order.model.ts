@@ -19,6 +19,10 @@ export class Order extends Model<Order> {
   id: number;
 
   @AutoMap()
+  @Column({ field: 'user_id', allowNull: false })
+  userId: number;
+
+  @AutoMap()
   @ForeignKey(() => OrderStatus)
   @Column({ field: 'status_id', defaultValue: 1 })
   statusId: number;

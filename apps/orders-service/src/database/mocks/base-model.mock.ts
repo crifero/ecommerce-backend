@@ -64,7 +64,11 @@ export class BaseModelMock<T extends Record<string, any>> {
       Object.keys(where).every((key) => {
         const condition = where[key];
         if (condition !== null && typeof condition === 'object') {
-          if (Op.ne in condition) return item[key] !== condition[Op.ne];
+          if (Op.ne  in condition && item[key] === condition[Op.ne])  return false;
+          if (Op.gte in condition && !(item[key] >= condition[Op.gte])) return false;
+          if (Op.lte in condition && !(item[key] <= condition[Op.lte])) return false;
+          if (Op.gt  in condition && !(item[key] >  condition[Op.gt]))  return false;
+          if (Op.lt  in condition && !(item[key] <  condition[Op.lt]))  return false;
           return true;
         }
         return item[key] === condition;

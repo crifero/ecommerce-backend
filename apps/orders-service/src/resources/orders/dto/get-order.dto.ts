@@ -49,6 +49,10 @@ export class GetOrderDto {
   id: number;
 
   @AutoMap()
+  @ApiProperty({ example: 5 })
+  userId: number;
+
+  @AutoMap()
   @ApiProperty({ example: 'pending' })
   status: string;
 

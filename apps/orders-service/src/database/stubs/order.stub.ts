@@ -16,6 +16,7 @@ export const orderItemStub = (): GetOrderItemDto => ({
 export const allOrdersStub = (): GetOrderDto[] => [
   {
     id: 1,
+    userId: 1,
     status: 'pending',
     total: 2599.98,
     observations: null,
@@ -25,6 +26,7 @@ export const allOrdersStub = (): GetOrderDto[] => [
   },
   {
     id: 2,
+    userId: 1,
     status: 'delivered',
     total: 49.99,
     observations: 'Urgent delivery',

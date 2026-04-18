@@ -34,6 +34,7 @@ export class OrderProfile extends AutomapperProfile {
         Order,
         GetOrderDto,
         forMember((d) => d.id, mapFrom((s) => s.id)),
+        forMember((d) => d.userId, mapFrom((s) => s.userId)),
         forMember(
           (d) => d.status,
           mapFrom((s) => s.status?.description ?? 'pending'),
