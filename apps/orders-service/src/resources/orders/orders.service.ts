@@ -49,9 +49,11 @@ export class OrdersService {
     const where: any = { wasDeleted: false, userId };
 
     if (query.startDate && query.endDate) {
+      const end = new Date(query.endDate);
+      end.setUTCHours(23, 59, 59, 999);
       where.createdAt = {
         [Op.gte]: new Date(query.startDate),
-        [Op.lte]: new Date(query.endDate),
+        [Op.lte]: end,
       };
     }
 
@@ -111,8 +113,11 @@ export class OrdersService {
 
     try {
       const response = await axios.get<{ data: ProductData }>(
-        `${this.productsUrl}/api/v1/products/${productId}`,
-        { timeout: PRODUCTS_TIMEOUT_MS },
+        `${this.productsUrl}/api/v1/products/internal/${productId}`,
+        {
+          timeout: PRODUCTS_TIMEOUT_MS,
+          headers: { 'x-service-key': process.env.SERVICE_KEY ?? 'internal_service_key' },
+        },
       );
       productData = response.data.data ?? (response.data as any);
     } catch (err) {

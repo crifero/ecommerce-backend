@@ -36,6 +36,7 @@ import { PaginatedResponseBody } from '@libs/paginated-response-body';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+
   @Get()
   @Roles('admin', 'user')
   @ApiOperation({ summary: 'List products (supports pagination and search)' })
