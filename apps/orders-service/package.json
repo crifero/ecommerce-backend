@@ -1,6 +1,6 @@
 {
   "name": "orders-service",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Microservicio de gestión de órdenes",
   "scripts": {
     "build": "nest build",
