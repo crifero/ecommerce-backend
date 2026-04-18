@@ -7,6 +7,8 @@ import { orderStub, allOrdersStub } from '../../database/stubs/order.stub';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { SearchOrderDto } from './dto/search-order.dto';
 import { JwtPayload } from '../../decorators/current-user.decorator';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { RolesGuard } from '../../guards/roles.guard';
 
 const mockUser: JwtPayload = { sub: 1, email: 'test@example.com', role: 'user' };
 
@@ -21,6 +23,10 @@ describe('OrdersController', () => {
     })
       .overrideProvider(OrdersService)
       .useClass(OrdersServiceMock)
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
       .compile();
 
     controller = module.get<OrdersController>(OrdersController);
