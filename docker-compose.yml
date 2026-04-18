@@ -22,6 +22,30 @@ services:
       timeout: 5s
       retries: 5
 
+  auth-service:
+    build:
+      context: ./apps/auth-service
+      dockerfile: Dockerfile
+    container_name: ecommerce_auth
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      NODE_ENV: development
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ecommerce
+      DB_PASS: ecommerce_pass
+      DB_NAME: ecommerce_db
+      JWT_SECRET: jwt_secret_change_in_production
+      JWT_EXPIRES_IN: 24h
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ecommerce_net
+
   products-service:
     build:
       context: ./apps/products-service
@@ -37,11 +61,14 @@ services:
       DB_PASS: ecommerce_pass
       DB_NAME: ecommerce_db
       DB_SCHEMA: products
+      JWT_SECRET: jwt_secret_change_in_production
     ports:
       - "3001:3001"
     depends_on:
       postgres:
         condition: service_healthy
+      auth-service:
+        condition: service_started
     networks:
       - ecommerce_net
 
@@ -61,11 +88,14 @@ services:
       DB_NAME: ecommerce_db
       DB_SCHEMA: orders
       PRODUCTS_SERVICE_URL: http://products-service:3001
+      JWT_SECRET: jwt_secret_change_in_production
     ports:
       - "3002:3002"
     depends_on:
       postgres:
         condition: service_healthy
+      auth-service:
+        condition: service_started
       products-service:
         condition: service_started
     networks:
