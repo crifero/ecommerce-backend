@@ -29,6 +29,8 @@ const mockSequelize = {
   transaction: jest.fn().mockResolvedValue(mockTransaction),
 };
 
+const TEST_USER_ID = 1;
+
 describe('OrdersService', () => {
   let service: OrdersService;
   let orderModelMock: OrderModelMock;
@@ -57,14 +59,14 @@ describe('OrdersService', () => {
   describe('findAll', () => {
     it('should return all orders as array', async () => {
       const query: SearchOrderDto = {};
-      const result = await service.findAll(query);
+      const result = await service.findAll(query, TEST_USER_ID);
       expect(orderModelMock.findAll).toHaveBeenCalled();
       expect(Array.isArray(result)).toBe(true);
     });
 
     it('should return paginated response when paginated=true', async () => {
       const query: SearchOrderDto = { paginated: true, page: 1, size: 10 };
-      const result = await service.findAll(query);
+      const result = await service.findAll(query, TEST_USER_ID);
       expect(orderModelMock.findAndCountAll).toHaveBeenCalled();
       expect(result).toHaveProperty('data');
       expect(result).toHaveProperty('total_results');
@@ -81,13 +83,13 @@ describe('OrdersService', () => {
         items: allOrdersStub()[0].items,
       };
       orderModelMock.findOne.mockResolvedValueOnce(order);
-      const result = await service.findOne(1);
+      const result = await service.findOne(1, TEST_USER_ID);
       expect(result.id).toBe(orderStub().id);
     });
 
     it('should throw NotFoundException when order does not exist', async () => {
       orderModelMock.findOne.mockResolvedValueOnce(null);
-      await expect(service.findOne(999)).rejects.toBeInstanceOf(NotFoundException);
+      await expect(service.findOne(999, TEST_USER_ID)).rejects.toBeInstanceOf(NotFoundException);
     });
   });
 
@@ -125,7 +127,7 @@ describe('OrdersService', () => {
         items: [{ ...productResponse.data.data, quantity: 2, subtotal: 2599.98 }],
       });
 
-      const result = await service.create(createDto);
+      const result = await service.create(createDto, TEST_USER_ID);
       expect(mockedAxios.get).toHaveBeenCalledTimes(1);
       expect(mockTransaction.commit).toHaveBeenCalled();
       expect(result).toBeDefined();
@@ -134,7 +136,7 @@ describe('OrdersService', () => {
     it('should throw ServiceUnavailableException when products-service is down', async () => {
       mockedAxios.get.mockRejectedValueOnce({ isAxiosError: true, code: 'ECONNREFUSED' });
       mockedAxios.isAxiosError.mockReturnValueOnce(true);
-      await expect(service.create(createDto)).rejects.toBeInstanceOf(ServiceUnavailableException);
+      await expect(service.create(createDto, TEST_USER_ID)).rejects.toBeInstanceOf(ServiceUnavailableException);
       expect(mockTransaction.rollback).not.toHaveBeenCalled();
     });
 
@@ -142,21 +144,21 @@ describe('OrdersService', () => {
       const error = { isAxiosError: true, response: { status: 404 } };
       mockedAxios.get.mockRejectedValueOnce(error);
       mockedAxios.isAxiosError.mockReturnValue(true);
-      await expect(service.create(createDto)).rejects.toBeInstanceOf(NotFoundException);
+      await expect(service.create(createDto, TEST_USER_ID)).rejects.toBeInstanceOf(NotFoundException);
     });
 
     it('should throw BadRequestException when product is inactive', async () => {
       mockedAxios.get.mockResolvedValueOnce({
         data: { data: { ...productResponse.data.data, isActive: false } },
       });
-      await expect(service.create(createDto)).rejects.toBeInstanceOf(BadRequestException);
+      await expect(service.create(createDto, TEST_USER_ID)).rejects.toBeInstanceOf(BadRequestException);
     });
 
     it('should throw BadRequestException when stock is insufficient', async () => {
       mockedAxios.get.mockResolvedValueOnce({
         data: { data: { ...productResponse.data.data, stock: 1 } },
       });
-      await expect(service.create({ items: [{ productId: 1, quantity: 5 }] })).rejects.toBeInstanceOf(
+      await expect(service.create({ items: [{ productId: 1, quantity: 5 }] }, TEST_USER_ID)).rejects.toBeInstanceOf(
         BadRequestException,
       );
     });
@@ -164,7 +166,7 @@ describe('OrdersService', () => {
     it('should rollback transaction on error during save', async () => {
       mockedAxios.get.mockResolvedValueOnce(productResponse);
       orderModelMock.create.mockRejectedValueOnce(new Error('DB error'));
-      await expect(service.create(createDto)).rejects.toThrow('DB error');
+      await expect(service.create(createDto, TEST_USER_ID)).rejects.toThrow('DB error');
       expect(mockTransaction.rollback).toHaveBeenCalled();
     });
   });
