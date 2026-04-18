@@ -25,6 +25,22 @@ export class GetOrderItemDto {
   @AutoMap()
   @ApiProperty({ example: 298 })
   subtotal: number;
+
+  @AutoMap()
+  @ApiProperty({ example: true })
+  isActive: boolean;
+
+  @AutoMap()
+  @ApiProperty({ example: false })
+  wasDeleted: boolean;
+
+  @AutoMap()
+  @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
+  createdAt: Date;
+
+  @AutoMap()
+  @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
+  updatedAt: Date;
 }
 
 export class GetOrderDto {

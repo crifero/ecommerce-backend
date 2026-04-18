@@ -56,7 +56,7 @@ export class OrdersService {
 
     const include = [
       { model: OrderStatus, as: 'status' },
-      { model: OrderItem, as: 'items' },
+      { model: OrderItem, as: 'items', where: { wasDeleted: false }, required: false },
     ];
 
     if (query.paginated) {
@@ -91,7 +91,7 @@ export class OrdersService {
       where: { id, wasDeleted: false },
       include: [
         { model: OrderStatus, as: 'status' },
-        { model: OrderItem, as: 'items' },
+        { model: OrderItem, as: 'items', where: { wasDeleted: false }, required: false },
       ],
     });
 

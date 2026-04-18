@@ -7,6 +7,10 @@ export const orderItemStub = (): GetOrderItemDto => ({
   productPrice: 1299.99,
   quantity: 2,
   subtotal: 2599.98,
+  isActive: true,
+  wasDeleted: false,
+  createdAt: new Date('2024-01-01'),
+  updatedAt: new Date('2024-01-01'),
 });
 
 export const allOrdersStub = (): GetOrderDto[] => [
@@ -32,6 +36,10 @@ export const allOrdersStub = (): GetOrderDto[] => [
         productPrice: 49.99,
         quantity: 1,
         subtotal: 49.99,
+        isActive: true,
+        wasDeleted: false,
+        createdAt: new Date('2024-01-02'),
+        updatedAt: new Date('2024-01-02'),
       },
     ],
     createdAt: new Date('2024-01-02'),

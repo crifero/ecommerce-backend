@@ -2,13 +2,15 @@ import { AutoMap } from '@automapper/classes';
 import {
   BelongsTo,
   Column,
+  CreatedAt,
   ForeignKey,
   Model,
   Table,
+  UpdatedAt,
 } from 'sequelize-typescript';
 import { Order } from './order.model';
 
-@Table({ tableName: 'order_items', schema: 'orders', timestamps: false })
+@Table({ tableName: 'order_items', schema: 'orders' })
 export class OrderItem extends Model<OrderItem> {
   @AutoMap()
   @Column({ primaryKey: true, autoIncrement: true })
@@ -38,6 +40,24 @@ export class OrderItem extends Model<OrderItem> {
   @AutoMap()
   @Column({ field: 'subtotal', allowNull: false })
   subtotal: number;
+
+  @AutoMap()
+  @Column({ field: 'is_active', defaultValue: true })
+  isActive: boolean;
+
+  @AutoMap()
+  @Column({ field: 'was_deleted', defaultValue: false })
+  wasDeleted: boolean;
+
+  @AutoMap()
+  @CreatedAt
+  @Column({ field: 'created_at' })
+  createdAt: Date;
+
+  @AutoMap()
+  @UpdatedAt
+  @Column({ field: 'updated_at' })
+  updatedAt: Date;
 
   @BelongsTo(() => Order)
   order: Order;

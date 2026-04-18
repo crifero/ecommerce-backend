@@ -23,6 +23,10 @@ export class OrderProfile extends AutomapperProfile {
         forMember((d) => d.productPrice, mapFrom((s) => Number(s.productPrice))),
         forMember((d) => d.quantity, mapFrom((s) => s.quantity)),
         forMember((d) => d.subtotal, mapFrom((s) => Number(s.subtotal))),
+        forMember((d) => d.isActive, mapFrom((s) => s.isActive)),
+        forMember((d) => d.wasDeleted, mapFrom((s) => s.wasDeleted)),
+        forMember((d) => d.createdAt, mapFrom((s) => s.createdAt)),
+        forMember((d) => d.updatedAt, mapFrom((s) => s.updatedAt)),
       );
 
       createMap(
